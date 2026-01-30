@@ -51,7 +51,10 @@ func Run() {
 	}
 
 	if *jsonOnly {
-		docServer := document.NewServer(*documentsDirectory)
+		docServer, err := document.NewServerWithEncryption(*documentsDirectory, filepath.Join(*webappDirectory, ".keys"))
+		if err != nil {
+			log.Fatalf("Failed to initialize document server: %v", err)
+		}
 		log.Printf("Starting JSON server on %s, serving documents from: %s", *documentPort, *documentsDirectory)
 		if err := runHTTPServer(*documentPort, docServer.Handler()); err != nil {
 			log.Fatalf("JSON server failed to start: %v", err)
@@ -80,7 +83,10 @@ func Run() {
 	}
 
 	webPort = ensureAvailablePort(*webPort)
-	docServer := document.NewServer(*documentsDirectory)
+	docServer, err := document.NewServerWithEncryption(*documentsDirectory, filepath.Join(*webappDirectory, ".keys"))
+	if err != nil {
+		log.Fatalf("Failed to initialize document server: %v", err)
+	}
 	webServer, err := web.NewServer(*webappDirectory, jsonPortValue)
 	if err != nil {
 		log.Fatalf("Failed to load web app template: %v", err)

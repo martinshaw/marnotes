@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MarNotes - JSON Server Dashboard</title>
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+          "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      #root {
+        width: 100%;
+        max-width: 800px;
+      }
+      .container {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      h1 {
+        color: #333;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+      .subtitle {
+        color: #666;
+        font-size: 1.1rem;
+      }
+      .info-card {
+        background: #f7f9fc;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid #667eea;
+      }
+      .info-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .info-value {
+        font-size: 1.8rem;
+        color: #667eea;
+        font-weight: 700;
+        font-family: "Courier New", monospace;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: #10b981;
+        color: white;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+      .footer {
+        margin-top: 30px;
+        text-align: center;
+        color: #999;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      function App() {
+        const [port, setPort] = useState("Loading...");
+
+        useEffect(() => {
+          // Extract port from current window location
+          const currentPort = window.location.port || "80";
+          setPort(currentPort);
+        }, []);
+
+        return (
+          <div className="container">
+            <div className="header">
+              <h1>📝 MarNotes</h1>
+              <p className="subtitle">JSON Document Server Dashboard</p>
+            </div>
+
+            <div className="info-card">
+              <div className="info-label">Server Status</div>
+              <div>
+                <span className="status">
+                  <span className="status-dot"></span>
+                  Online & Running
+                </span>
+              </div>
+            </div>
+
+            <div className="info-card">
+              <div className="info-label">JSON Server Port</div>
+              <div className="info-value">{port}</div>
+            </div>
+
+            <div className="info-card">
+              <div className="info-label">API Endpoints</div>
+              <div style={{ marginTop: "12px", lineHeight: "1.8" }}>
+                <div>
+                  <code
+                    style={{
+                      background: "#e5e7eb",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    GET /documents
+                  </code>{" "}
+                  - List all documents
+                </div>
+                <div>
+                  <code
+                    style={{
+                      background: "#e5e7eb",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    GET /doc/&#123;name&#125;
+                  </code>{" "}
+                  - Get specific document
+                </div>
+                <div>
+                  <code
+                    style={{
+                      background: "#e5e7eb",
+                      padding: "4px 8px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    GET /health
+                  </code>{" "}
+                  - Health check
+                </div>
+              </div>
+            </div>
+
+            <div className="footer">
+              <p>MarNotes Server v1.0 • React Dashboard</p>
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

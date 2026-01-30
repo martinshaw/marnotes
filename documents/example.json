@@ -1,0 +1,6 @@
+{
+    "id": 1,
+    "name": "Example Document",
+    "description": "This is an example JSON document served by the JSON server",
+    "created_at": "2026-01-30T00:00:00Z"
+}

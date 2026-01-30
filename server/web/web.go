@@ -18,7 +18,7 @@ type PageData struct {
 }
 
 func NewServer(webappDirectory, jsonPort string) (*Server, error) {
-	indexPath := filepath.Join(webappDirectory, "public", "index.html")
+	indexPath := filepath.Join(webappDirectory, "public", "index.html.tpl")
 	tpl, err := template.ParseFiles(indexPath)
 	if err != nil {
 		return nil, err

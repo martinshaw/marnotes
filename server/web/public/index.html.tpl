@@ -4,15 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MarNotes - JSON Server Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/normalize.css@8.0.1/normalize.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintjs/icons@6/lib/css/blueprint-icons.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@blueprintjs/core@6/lib/css/blueprint.css" />
     <link rel="stylesheet" href="/static/dist/app.css" />
-    <script
-      crossorigin
-      src="https://unpkg.com/react@18/umd/react.production.min.js"
-    ></script>
-    <script
-      crossorigin
-      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
-    ></script>
     <script>
       window.__JSON_SERVER_PORT__ = "{{.JSONPort}}";
     </script>

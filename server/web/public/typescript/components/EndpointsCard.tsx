@@ -1,45 +1,26 @@
+import * as React from "react";
+import { Card, Code } from "@blueprintjs/core";
+
 export default function EndpointsCard() {
   return (
-    <div className="info-card">
-      <div className="info-label">API Endpoints</div>
-      <div style={{ marginTop: "12px", lineHeight: "1.8" }}>
+    <Card elevation={1} style={{ marginBottom: "15px" }}>
+      <div
+        className="bp5-text-small bp5-text-muted"
+        style={{ marginBottom: "12px" }}
+      >
+        API ENDPOINTS
+      </div>
+      <div style={{ lineHeight: "2" }}>
         <div>
-          <code
-            style={{
-              background: "#e5e7eb",
-              padding: "4px 8px",
-              borderRadius: "4px",
-            }}
-          >
-            GET /documents
-          </code>{" "}
-          - List all documents
+          <Code>GET /documents</Code> - List all documents
         </div>
         <div>
-          <code
-            style={{
-              background: "#e5e7eb",
-              padding: "4px 8px",
-              borderRadius: "4px",
-            }}
-          >
-            GET /doc/&#123;name&#125;
-          </code>{" "}
-          - Get specific document
+          <Code>GET /doc/&#123;name&#125;</Code> - Get specific document
         </div>
         <div>
-          <code
-            style={{
-              background: "#e5e7eb",
-              padding: "4px 8px",
-              borderRadius: "4px",
-            }}
-          >
-            GET /health
-          </code>{" "}
-          - Health check
+          <Code>GET /health</Code> - Health check
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

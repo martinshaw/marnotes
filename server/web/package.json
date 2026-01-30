@@ -3,12 +3,18 @@
     "type": "module",
     "scripts": {
         "build:css": "sass public/scss/app.scss public/dist/app.css --style=compressed --no-source-map",
-        "build:js": "esbuild public/typescript/app.tsx --bundle --minify --format=iife --outfile=public/dist/app.js --jsx-factory=React.createElement --jsx-fragment=React.Fragment",
+        "build:js": "esbuild public/typescript/app.tsx --bundle --minify --format=iife --outfile=public/dist/app.js --jsx=automatic",
         "build": "npm run build:css && npm run build:js",
-        "build:dev": "sass public/scss/app.scss public/dist/app.css --no-source-map && esbuild public/typescript/app.tsx --bundle --sourcemap --format=iife --outfile=public/dist/app.js --jsx-factory=React.createElement --jsx-fragment=React.Fragment"
+        "build:dev": "sass public/scss/app.scss public/dist/app.css --no-source-map && esbuild public/typescript/app.tsx --bundle --sourcemap --format=iife --outfile=public/dist/app.js --jsx=automatic"
     },
     "devDependencies": {
+        "@blueprintjs/core": "^6.7.0",
+        "@blueprintjs/icons": "^6.5.1",
+        "@types/react": "^18.3.27",
+        "@types/react-dom": "^18.3.7",
         "esbuild": "^0.27.2",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
         "sass": "^1.70.0",
         "typescript": "^5.3.3"
     }

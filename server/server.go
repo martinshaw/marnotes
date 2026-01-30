@@ -141,7 +141,8 @@ func buildWebAssets(webappDirectory string) error {
 		log.Println("✓ Web dependencies installed")
 	}
 
-	if err := runWebCommand(webappDirectory, "npm", "run", "build"); err != nil {
+	// if err := runWebCommand(webappDirectory, "npm", "run", "build"); err != nil {
+	if err := runWebCommand(webappDirectory, "npm", "run", "build:dev"); err != nil {
 		return err
 	}
 	log.Println("✓ Web assets compiled successfully")

@@ -1,3 +1,6 @@
+import * as React from "react";
+import { Card, Button, ButtonGroup, Callout, Pre } from "@blueprintjs/core";
+
 type DocumentsDataProps = {
   jsonPort: string;
 };
@@ -100,112 +103,84 @@ export default function DocumentsData({ jsonPort }: DocumentsDataProps) {
   };
 
   return (
-    <div className="info-card">
-      <div className="info-label">Document Browser</div>
-      <div style={{ marginTop: "12px" }}>
-        <button
+    <Card elevation={1} style={{ marginBottom: "15px" }}>
+      <div
+        className="bp5-text-small bp5-text-muted"
+        style={{ marginBottom: "12px" }}
+      >
+        DOCUMENT BROWSER
+      </div>
+      <div>
+        <Button
           onClick={fetchDocuments}
           disabled={loading}
-          style={{
-            padding: "8px 16px",
-            background: "#667eea",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            marginBottom: "12px",
-            fontSize: "14px",
-            fontWeight: "600",
-          }}
+          intent="primary"
+          icon="document"
+          loading={loading}
+          style={{ marginBottom: "12px" }}
         >
-          {loading ? "Loading..." : "List Documents"}
-        </button>
+          List Documents
+        </Button>
 
         {error && (
-          <div
-            style={{
-              color: "#dc2626",
-              padding: "8px",
-              marginBottom: "12px",
-              background: "#fee2e2",
-              borderRadius: "4px",
-              fontSize: "14px",
-            }}
-          >
+          <Callout intent="danger" style={{ marginBottom: "12px" }}>
             {error}
-          </div>
+          </Callout>
         )}
 
         {documents.length > 0 && (
           <div style={{ marginBottom: "12px" }}>
             <div
-              style={{ marginBottom: "8px", fontSize: "13px", color: "#555" }}
+              className="bp5-text-small bp5-text-muted"
+              style={{ marginBottom: "8px" }}
             >
               Found {documents.length} document
               {documents.length !== 1 ? "s" : ""}:
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <ButtonGroup minimal>
               {documents.map((doc) => (
-                <button
+                <Button
                   key={doc}
                   onClick={() => fetchDocument(doc.replace(".json", ""))}
-                  style={{
-                    padding: "6px 12px",
-                    background:
-                      selectedDoc === doc.replace(".json", "")
-                        ? "#10b981"
-                        : "#e5e7eb",
-                    color:
-                      selectedDoc === doc.replace(".json", "")
-                        ? "white"
-                        : "#333",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "13px",
-                    fontWeight: "500",
-                  }}
+                  active={selectedDoc === doc.replace(".json", "")}
+                  intent={
+                    selectedDoc === doc.replace(".json", "")
+                      ? "success"
+                      : "none"
+                  }
+                  small
                 >
                   {doc}
-                </button>
+                </Button>
               ))}
-            </div>
+            </ButtonGroup>
           </div>
         )}
 
         {docContent && (
-          <div
-            style={{
-              marginTop: "12px",
-              padding: "12px",
-              background: "#f9fafb",
-              borderRadius: "4px",
-              border: "1px solid #e5e7eb",
-            }}
+          <Card
+            elevation={0}
+            style={{ marginTop: "12px", background: "#f5f8fa" }}
           >
             <div
-              style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}
+              className="bp5-text-small bp5-text-muted"
+              style={{ marginBottom: "8px" }}
             >
               Content of <strong>{selectedDoc}.json</strong>:
             </div>
-            <pre
+            <Pre
               style={{
                 margin: 0,
-                padding: "8px",
-                background: "#fff",
-                borderRadius: "4px",
-                overflow: "auto",
                 fontSize: "12px",
-                color: "#333",
-                fontFamily: "Courier New, monospace",
-                border: "1px solid #e5e7eb",
+                maxHeight: "400px",
+                overflow: "auto",
               }}
             >
               {JSON.stringify(docContent, null, 2)}
-            </pre>
-          </div>
+            </Pre>
+          </Card>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

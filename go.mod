@@ -1,3 +1,3 @@
-module github.com/martin/jsonserver
+module martinshaw.co/marnotes
 
 go 1.21

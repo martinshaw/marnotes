@@ -20,11 +20,26 @@ func NewServer(documentsDirectory string) *Server {
 
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", s.healthCheck)
-	mux.HandleFunc("/health", s.healthCheck)
-	mux.HandleFunc("/documents", s.listDocuments)
-	mux.HandleFunc("/doc/", s.serveDocument)
+	mux.HandleFunc("/", s.corsMiddleware(s.healthCheck))
+	mux.HandleFunc("/health", s.corsMiddleware(s.healthCheck))
+	mux.HandleFunc("/documents", s.corsMiddleware(s.listDocuments))
+	mux.HandleFunc("/doc/", s.corsMiddleware(s.serveDocument))
 	return mux
+}
+
+func (s *Server) corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next(w, r)
+	}
 }
 
 // listDocuments lists all JSON files in the configured directory

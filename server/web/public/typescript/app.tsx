@@ -2,6 +2,7 @@ import Header from "./components/Header";
 import StatusCard from "./components/StatusCard";
 import PortCard from "./components/PortCard";
 import EndpointsCard from "./components/EndpointsCard";
+import DocumentsData from "./components/DocumentsData";
 import Footer from "./components/Footer";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <Header />
       <StatusCard />
       <PortCard port={port} />
+      <DocumentsData jsonPort={port} />
       <EndpointsCard />
       <Footer />
     </div>

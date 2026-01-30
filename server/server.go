@@ -2,7 +2,9 @@ package server
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -42,6 +44,7 @@ func Run() {
 		}
 	}
 
+	documentPort = ensureAvailablePort(*documentPort)
 	jsonPortValue := strings.TrimPrefix(*documentPort, ":")
 	if jsonPortValue == "" {
 		jsonPortValue = "8080"
@@ -60,6 +63,7 @@ func Run() {
 		if err := buildWebAssets(*webappDirectory); err != nil {
 			log.Fatalf("Failed to build web app assets: %v", err)
 		}
+		webPort = ensureAvailablePort(*webPort)
 		webServer, err := web.NewServer(*webappDirectory, jsonPortValue)
 		if err != nil {
 			log.Fatalf("Failed to load web app template: %v", err)
@@ -75,6 +79,7 @@ func Run() {
 		log.Fatalf("Failed to build web app assets: %v", err)
 	}
 
+	webPort = ensureAvailablePort(*webPort)
 	docServer := document.NewServer(*documentsDirectory)
 	webServer, err := web.NewServer(*webappDirectory, jsonPortValue)
 	if err != nil {
@@ -127,15 +132,52 @@ func buildWebAssets(webappDirectory string) error {
 		if err := runWebCommand(webappDirectory, "npm", "install"); err != nil {
 			return err
 		}
+		log.Println("✓ Web dependencies installed")
 	}
 
-	return runWebCommand(webappDirectory, "npm", "run", "build")
+	if err := runWebCommand(webappDirectory, "npm", "run", "build"); err != nil {
+		return err
+	}
+	log.Println("✓ Web assets compiled successfully")
+	return nil
 }
 
 func runWebCommand(dir string, name string, args ...string) error {
 	cmd := exec.Command(name, args...)
 	cmd.Dir = dir
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func isPortAvailable(port string) bool {
+	listener, err := net.Listen("tcp", port)
+	if err != nil {
+		return false
+	}
+	listener.Close()
+	return true
+}
+
+func findAvailablePort(basePort int) string {
+	for port := basePort; port < basePort+100; port++ {
+		addr := fmt.Sprintf(":%d", port)
+		if isPortAvailable(addr) {
+			return addr
+		}
+	}
+	return fmt.Sprintf(":%d", basePort)
+}
+
+func ensureAvailablePort(port string) *string {
+	if isPortAvailable(port) {
+		return &port
+	}
+
+	basePort := 8080
+	if port != ":8080" {
+		fmt.Sscanf(port, ":%d", &basePort)
+	}
+
+	availablePort := findAvailablePort(basePort)
+	log.Printf("Port %s is in use, using %s instead", port, availablePort)
+	return &availablePort
 }

@@ -8,7 +8,7 @@ import {
 } from "@blueprintjs/core";
 
 export default function NavBar() {
-  const buttonStyling = {
+  const buttonStyling: React.CSSProperties = {
     marginLeft: 2,
     marginRight: 2,
     marginTop: 5,
@@ -17,10 +17,27 @@ export default function NavBar() {
     minHeight: "auto",
   };
 
+  const titleStyling: React.CSSProperties = {
+    flex: 1,
+    height: 32,
+    minHeight: "auto",
+    color: "#fff",
+    paddingLeft: 10,
+    paddingRight: 10,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 6,
+    userSelect: "text",
+  };
+
   return (
     <Navbar
       fixedToTop
       style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
         marginBottom: 0,
         height: 34,
         background: "#000",
@@ -30,7 +47,10 @@ export default function NavBar() {
         userSelect: "none",
       }}
     >
-      <NavbarGroup align={Alignment.START} style={{ height: 28 }}>
+      <NavbarGroup
+        //   align={Alignment.START}
+        style={{ height: 28 }}
+      >
         <Button
           variant="minimal"
           text={<span style={{ fontSize: 12, color: "#fff" }}>Documents</span>}
@@ -47,23 +67,11 @@ export default function NavBar() {
           style={buttonStyling}
         />
       </NavbarGroup>
-      <NavbarGroup align={Alignment.END} style={{ height: 28 }}>
-        <NavbarHeading
-          style={{
-            height: 32,
-            minHeight: "auto",
-            color: "#fff",
-            paddingLeft: 10,
-            paddingRight: 10,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 6,
-            userSelect: "text",
-          }}
-        >
-          MarNotes
-        </NavbarHeading>
+      <NavbarGroup
+        // align={Alignment.END}
+        style={{ height: 28, flex: 1, display: "flex" }}
+      >
+        <NavbarHeading style={titleStyling}>MarNotes</NavbarHeading>
         <Button
           variant="minimal"
           text={<span style={{ fontSize: 12, color: "#fff" }}>Help</span>}

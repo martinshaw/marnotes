@@ -16,52 +16,6 @@ export default function DocumentsData({ jsonPort }: DocumentsDataProps) {
   const [docContent, setDocContent] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [publicKey, setPublicKey] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    fetchPublicKey();
-  }, []);
-
-  const fetchPublicKey = async () => {
-    try {
-      const response = await fetch(`http://localhost:${jsonPort}/publickey`);
-      if (response.ok) {
-        const keyText = await response.text();
-        setPublicKey(keyText);
-      }
-    } catch (err) {
-      console.log("Encryption not available, using unencrypted mode");
-    }
-  };
-
-  const decryptResponse = async (encryptedData: any) => {
-    if (typeof encryptedData === "object" && encryptedData.encrypted) {
-      const workerCode = `
-        self.onmessage = async (e) => {
-          const { encrypted, publicKeyPem } = e.data;
-          try {
-            const publicKeyStr = publicKeyPem
-              .replace('-----BEGIN PUBLIC KEY-----', '')
-              .replace('-----END PUBLIC KEY-----', '')
-              .replace(/\\n/g, '');
-            
-            const binaryString = atob(encrypted);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-              bytes[i] = binaryString.charCodeAt(i);
-            }
-            
-            self.postMessage({ error: 'RSA decryption requires crypto module' });
-          } catch (err) {
-            self.postMessage({ error: err.message });
-          }
-        };
-      `;
-
-      return encryptedData;
-    }
-    return encryptedData;
-  };
 
   const fetchDocuments = async () => {
     setLoading(true);
@@ -71,8 +25,7 @@ export default function DocumentsData({ jsonPort }: DocumentsDataProps) {
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      const decrypted = await decryptResponse(data);
-      setDocuments(decrypted.documents || []);
+      setDocuments(data.documents || []);
       setDocContent(null);
       setSelectedDoc(null);
     } catch (err) {
@@ -87,14 +40,13 @@ export default function DocumentsData({ jsonPort }: DocumentsDataProps) {
     setError(null);
     try {
       const response = await fetch(
-        `http://localhost:${jsonPort}/doc/${docName}`,
+        `http://localhost:${jsonPort}/documents/${docName}`,
       );
       if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
-      const decrypted = await decryptResponse(data);
       setSelectedDoc(docName);
-      setDocContent(decrypted);
+      setDocContent(data);
     } catch (err) {
       setError(`Failed to fetch document: ${err}`);
     } finally {
@@ -141,13 +93,9 @@ export default function DocumentsData({ jsonPort }: DocumentsDataProps) {
               {documents.map((doc) => (
                 <Button
                   key={doc}
-                  onClick={() => fetchDocument(doc.replace(".json", ""))}
-                  active={selectedDoc === doc.replace(".json", "")}
-                  intent={
-                    selectedDoc === doc.replace(".json", "")
-                      ? "success"
-                      : "none"
-                  }
+                  onClick={() => fetchDocument(doc)}
+                  active={selectedDoc === doc}
+                  intent={selectedDoc === doc ? "success" : "none"}
                   small
                 >
                   {doc}
@@ -166,7 +114,7 @@ export default function DocumentsData({ jsonPort }: DocumentsDataProps) {
               className="bp5-text-small bp5-text-muted"
               style={{ marginBottom: "8px" }}
             >
-              Content of <strong>{selectedDoc}.json</strong>:
+              Content of <strong>{selectedDoc}</strong>:
             </div>
             <Pre
               style={{

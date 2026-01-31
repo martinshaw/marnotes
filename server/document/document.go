@@ -1,7 +1,6 @@
 package document
 
 import (
-	"crypto/rsa"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,83 +8,22 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"martinshaw.co/marnotes/server/crypto"
 )
 
 type Server struct {
 	documentsDirectory string
-	privateKey         *rsa.PrivateKey
-	publicKey          *rsa.PublicKey
 }
 
 func NewServer(documentsDirectory string) *Server {
 	return &Server{documentsDirectory: documentsDirectory}
 }
 
-func NewServerWithEncryption(documentsDirectory, keyDir string) (*Server, error) {
-	kp, err := crypto.LoadOrGenerateKeyPair(keyDir, 2048)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Server{
-		documentsDirectory: documentsDirectory,
-		privateKey:         kp.PrivateKey,
-		publicKey:          kp.PublicKey,
-	}, nil
-}
-
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", s.corsMiddleware(s.healthCheck))
 	mux.HandleFunc("/health", s.corsMiddleware(s.healthCheck))
 	mux.HandleFunc("/documents", s.corsMiddleware(s.listDocuments))
-	mux.HandleFunc("/doc/", s.corsMiddleware(s.serveDocument))
-	mux.HandleFunc("/publickey", s.servePublicKey)
+	mux.HandleFunc("/documents/{filePath...}", s.corsMiddleware(s.serveDocument))
 	return mux
-}
-
-func (s *Server) servePublicKey(w http.ResponseWriter, r *http.Request) {
-	if s.publicKey == nil {
-		http.Error(w, "Public key not available", http.StatusBadRequest)
-		return
-	}
-
-	publicKeyBytes, err := crypto.GetPublicKeyPEM(s.publicKey)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to export public key: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/plain")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Write(publicKeyBytes)
-}
-
-func (s *Server) encryptResponse(data []byte) ([]byte, error) {
-	if s.publicKey == nil {
-		return data, nil
-	}
-
-	encrypted, err := crypto.Encrypt(s.publicKey, data)
-	if err != nil {
-		return nil, err
-	}
-
-	response := map[string]string{
-		"encrypted": encrypted,
-	}
-
-	return json.Marshal(response)
-}
-
-func (s *Server) decryptRequest(encryptedPayload string) ([]byte, error) {
-	if s.privateKey == nil {
-		return []byte(encryptedPayload), nil
-	}
-
-	return crypto.Decrypt(s.privateKey, encryptedPayload)
 }
 
 func (s *Server) corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -130,30 +68,27 @@ func (s *Server) listDocuments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Implement proper client-side RSA decryption before enabling encryption
-	// For now, send unencrypted responses
 	w.Write(responseData)
 }
 
-// serveDocument serves a specific JSON document by filename
+// serveDocument serves a specific JSON document by filePath
 func (s *Server) serveDocument(w http.ResponseWriter, r *http.Request) {
-	filename := strings.TrimPrefix(r.URL.Path, "/doc/")
-	filename = strings.TrimSuffix(filename, ".json")
+	filePath := r.PathValue("filePath")
 
-	if filename == "" {
-		http.Error(w, "No filename specified", http.StatusBadRequest)
+	if filePath == "" {
+		http.Error(w, "No file path specified", http.StatusBadRequest)
 		return
 	}
 
 	// Prevent directory traversal
-	if strings.Contains(filename, "..") || strings.Contains(filename, "/") {
-		http.Error(w, "Invalid filename", http.StatusBadRequest)
+	if strings.Contains(filePath, "..") || strings.Contains(filePath, "/") {
+		http.Error(w, "Invalid file path", http.StatusBadRequest)
 		return
 	}
 
-	filePath := filepath.Join(s.documentsDirectory, filename+".json")
+	filePath = filepath.Join(s.documentsDirectory, filePath)
 
-	data, err := ioutil.ReadFile(filePath)
+	data, err := os.ReadFile(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
 			http.Error(w, "Document not found", http.StatusNotFound)
@@ -172,8 +107,6 @@ func (s *Server) serveDocument(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	// TODO: Implement proper client-side RSA decryption before enabling encryption
-	// For now, send unencrypted responses
 	w.Write(data)
 }
 
@@ -191,7 +124,5 @@ func (s *Server) healthCheck(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Implement proper client-side RSA decryption before enabling encryption
-	// For now, send unencrypted responses
 	w.Write(responseData)
 }

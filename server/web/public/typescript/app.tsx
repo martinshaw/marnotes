@@ -5,6 +5,7 @@ import Editor from "./components/Editor";
 
 function App() {
   const [port, setPort] = React.useState<string>("Loading...");
+  const [currentDocument, setCurrentDocument] = React.useState<any>(null);
 
   React.useEffect(() => {
     const configuredPort = (window as any).__JSON_SERVER_PORT__ || "";
@@ -14,8 +15,8 @@ function App() {
 
   return (
     <>
-      <NavBar />
-      <Editor />
+      <NavBar port={port} onDocumentSelect={setCurrentDocument} />
+      <Editor documentContent={currentDocument} />
     </>
   );
 }

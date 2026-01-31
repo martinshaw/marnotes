@@ -1,129 +1,64 @@
-# JSON Document Server
+# Marnotes
 
-A Go web server that serves JSON documents from a configurable directory and includes a React-based web dashboard.
+A Go-based JSON document server with a React/Lexical web dashboard.
 
 ## Features
 
-- Dual-mode HTTP server: JSON API + Web Dashboard
-- Configurable document directory
-- RESTful endpoints for listing and retrieving documents
-- React web interface displaying server status and port
-- Health check endpoint
-- Input validation to prevent directory traversal attacks
-- JSON validation on serve
-- Flexible deployment: run both servers together or independently
-
-## Building
-
-```bash
-go build
-```
-
-## Running
-
-### Run Both Servers (Default)
-
-```bash
-# Both JSON API and web app on the same port
-./jsonserver
-./jsonserver -port :8080
-```
-
-### Run JSON Server Only
-
-```bash
-./jsonserver -json-only
-./jsonserver -json-only -dir /path/to/json/files -port :3000
-```
-
-### Run Web App Only
-
-```bash
-./jsonserver -webapp-only
-./jsonserver -webapp-only -port :3000
-```
-
-### All Available Flags
-
-```bash
--dir string       # Directory containing JSON documents (default "./documents")
--webapp string    # Directory containing web application (default "./webapp")
--port string      # Port to listen on (default ":8080")
--json-only        # Start only the JSON server
--webapp-only      # Start only the web app server
-```
+- RESTful API for listing and retrieving JSON documents
+- React/TypeScript frontend with Blueprint UI
+- Lexical-based rich text editor supporting headings, lists, and formatting
+- Documents menu bar item: dropdown lists all available documents from the API
+- Click a document to load it into the editor (supports both Lexical and plain JSON)
+- Editor auto-focuses for immediate typing
+- Navigation elements use `tabIndex={-1}` to keep keyboard focus in the editor
+- CORS enabled for API endpoints
 
 ## API Endpoints
 
-### Web Dashboard
+- `GET /health` — Server status and config
+- `GET /documents` — List all JSON files in the documents directory
+- `GET /documents/{filename}` — Retrieve a specific document (supports both plain JSON and Lexical state)
 
-- `GET /` - React web dashboard (when running in default or webapp-only mode)
+## Web Interface
 
-### JSON API
-
-- `GET /health` or `GET /api/health` - Returns server status
-- `GET /documents` - Returns list of all JSON files in the directory
-- `GET /doc/{filename}` - Returns a specific JSON document
-
-**Examples:**
-
-```bash
-# Health check
-curl http://localhost:8080/health
-
-# List all documents
-curl http://localhost:8080/documents
-
-# Get specific document
-curl http://localhost:8080/doc/users
-curl http://localhost:8080/doc/example
-```
-
-## Example Usage
-
-### Combined Mode (Default)
-
-1. Build and run:
-
-```bash
-go build
-./jsonserver
-```
-
-2. Open your browser to `http://localhost:8080` to see the React dashboard
-
-3. Access the JSON API:
-
-```bash
-curl http://localhost:8080/documents
-curl http://localhost:8080/doc/users
-curl http://localhost:8080/doc/example
-```
-
-### JSON-Only Mode
-
-1. Run with JSON server only:
-
-```bash
-./jsonserver -json-only -port :3000
-```
-
-2. Access documents:
-
-```bash
-curl http://localhost:3000/documents
-curl http://localhost:3000/doc/users
-```
+- **Documents menu**: Dropdown with all available documents
+- **Editor**: Loads and displays the selected document (as rich text if Lexical, or as formatted JSON)
+- **Auto-focus**: Editor keeps focus for fast editing
+- **Tab-index**: Navigation and menu items are not focusable by keyboard, so the editor always keeps focus
 
 ## Project Structure
 
 ```
 .
-├── main.go          # Main application with dual-server support
-├── go.mod           # Go module definition
-├── documents/       # Directory containing JSON files
-│   ├── example.json
-│   └── users.json
-└── webapp/          # React web application
-    └── index.html
+├── main.go
+├── go.mod
+├── documents/
+│ ├── example.json
+│ ├── users.json
+│ └── lexical-example.json
+└── server/
+├── server.go
+└── document/
+└── document.go
+└── web/
+├── web.go
+├── package.json
+├── tsconfig.json
+└── public/
+├── index.html.tpl
+└── typescript/
+├── app.tsx
+└── components/
+├── Editor.tsx
+└── NavBar.tsx
 ```
+
+## Usage
+
+1. Build and run the Go server (`go build && ./marnotes`)
+2. Open `http://localhost:8080` in your browser
+3. Use the Documents menu to load and edit documents
+
+---
+
+All Rights Reserved, (c) 2026 marnotes

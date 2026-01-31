@@ -17,5 +17,9 @@
         "react-dom": "^18.3.1",
         "sass": "^1.70.0",
         "typescript": "^5.3.3"
+    },
+    "dependencies": {
+        "@lexical/react": "^0.39.0",
+        "lexical": "^0.39.0"
     }
 }

@@ -71,7 +71,7 @@ export default function NavBar() {
         // align={Alignment.END}
         style={{ height: 28, flex: 1, display: "flex" }}
       >
-        <NavbarHeading style={titleStyling}>MarNotes</NavbarHeading>
+        <NavbarHeading style={titleStyling}>Marnotes</NavbarHeading>
         <Button
           variant="minimal"
           text={<span style={{ fontSize: 12, color: "#fff" }}>Help</span>}

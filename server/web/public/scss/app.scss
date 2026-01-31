@@ -1,24 +1,45 @@
-// Custom styles for MarNotes with Blueprint UI
+// Configuration for UI
+$ui-accent-color: #ff8c00;
+$ui-base-color: #000000;
+$ui-font-family:
+  "IBM Plex Mono", "Monaco", "Menlo", "Consolas", "Courier New", monospace;
+
+// Configuration for Lexical Editor
+$editor-font-family: $ui-font-family;
+$editor-font-size: 14px;
+$editor-color: #ffffff;
+
+html {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+}
 
 body {
-  font-family:
-    "IBM Plex Mono", "Monaco", "Menlo", "Consolas", "Courier New", monospace;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba($ui-accent-color, 0.2),
+    $ui-base-color
+  );
+  background-color: $ui-base-color;
+  background-repeat: no-repeat;
+  background-clip: border-box;
+  background-attachment: fixed;
+  color: $editor-color;
+  font-family: $ui-font-family;
+  height: 100vh;
+  width: 100vw;
+  padding: 0px;
+  margin: 0px;
 }
 
 #root {
+  height: 100%;
   width: 100%;
-  max-width: 800px;
+  padding-top: 34px;
 }
 
-.container {
-  background: white;
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+#root > div > [data-lexical-editor="true"] {
+  height: 100%;
+  outline: none;
 }
